@@ -3,6 +3,6 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/realtime-chat/', 
+  base: '/realtime-chat', 
   plugins: [react()],
 })
