@@ -1,0 +1,60 @@
+.message {
+    padding: 10px;
+    border-radius: 5px;
+    max-width: 80%;
+    word-break: break-word;
+    margin-bottom: 10px;
+  }
+  
+  .user-message {
+    align-self: flex-end;
+    background-color: #dcf8c6;
+    margin-left: auto;
+  }
+  
+  .other-message {
+    align-self: flex-start;
+    background-color: #f0f0f0;
+  }
+  
+  .system-message {
+    align-self: center;
+    background-color: #fffde7;
+    color: #7a7a7a;
+    border: 1px solid #ffeebb;
+    font-style: italic;
+    padding: 5px 10px;
+    font-size: 0.9em;
+    max-width: 90%;
+    text-align: center;
+  }
+  
+  .message-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+  }
+  
+  .user-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    margin-right: 8px;
+    object-fit: cover;
+  }
+  
+  .username {
+    font-weight: bold;
+    margin-right: 10px;
+  }
+  
+  .timestamp {
+    color: #999;
+    font-size: 0.8em;
+    margin-left: auto;
+  }
+  
+  .message-body {
+    line-height: 1.4;
+  }

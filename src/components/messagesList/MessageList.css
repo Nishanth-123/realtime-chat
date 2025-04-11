@@ -1,0 +1,22 @@
+.messages-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    background-color: #fafafa;
+  }
+  
+  .typing-indicator {
+    align-self: center;
+    color: #999;
+    font-style: italic;
+    font-size: 0.9em;
+    margin: 5px 0;
+    padding: 5px 10px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+  }
