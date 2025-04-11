@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import "./Content.css";
 import { UserProfile } from "../../types";
 import { useTeleparty } from "../../context/TelepartyContext";
