@@ -4,6 +4,7 @@ import { useTeleparty } from "../../context/TelepartyContext";
 import "./ChatRoom.css";
 import MessageList from "../messagesList/MessageList";
 import ChatInput from "../chatInput/ChatInput";
+import { decompressUrl } from "../../utils";
 
 interface ChatRoomProps {
   roomId: string;
@@ -33,7 +34,7 @@ const ChatRoom: React.FC<ChatRoomProps> = ({
             <p>Welcome, {userProfile.nickname}!</p>
             {userProfile.userIcon && (
               <img
-                src={userProfile.userIcon}
+                src={decompressUrl(userProfile.userIcon) ?? ""}
                 alt="Your icon"
                 className="current-user-icon"
               />

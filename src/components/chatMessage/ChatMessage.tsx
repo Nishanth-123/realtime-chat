@@ -1,6 +1,7 @@
 import React, { memo } from "react";
 import "./ChatMessage.css";
 import { SessionChatMessage } from "teleparty-websocket-lib";
+import { decompressUrl } from "../../utils";
 
 interface ChatMessageProps {
   message: SessionChatMessage;
@@ -45,7 +46,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       <div className="message-header">
         {message.userIcon && (
           <img
-            src={message.userIcon}
+            src={decompressUrl(message.userIcon) ?? ""}
             alt={`${message.userNickname}'s icon`}
             className="user-icon"
           />

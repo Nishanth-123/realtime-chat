@@ -1,5 +1,6 @@
 import React, { memo, useCallback } from "react";
 import "./UserIconUpload.css";
+import { compressUrl, decompressUrl } from "../../../utils";
 
 interface UserIconUploadProps {
   userIcon?: string;
@@ -23,7 +24,35 @@ const UserIconUpload: React.FC<UserIconUploadProps> = ({
 
       const reader = new FileReader();
       reader.onload = () => {
-        onIconChange(reader.result as string);
+        // Now upload the file to ImgBB
+        const apiKey = "34ab7cbb4b8c4abbcd6bafb086eaf841"; // Public demo key
+
+        const formData = new FormData();
+        formData.append("image", file);
+
+        fetch(
+          `https://api.imgbb.com/1/upload?expiration=8640000&key=${apiKey}`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              // Get the URL and do something with it
+              const imageUrl = data.data.url;
+              console.log("Uploaded image URL:", imageUrl);
+              onIconChange(compressUrl(imageUrl));
+            } else {
+              console.error("Upload failed:", data.error);
+              alert("Failed to upload image.");
+            }
+          })
+          .catch((error) => {
+            console.error("Error uploading image:", error);
+            alert("Error uploading image. Please try again.");
+          });
       };
       reader.readAsDataURL(file);
     },
@@ -45,7 +74,11 @@ const UserIconUpload: React.FC<UserIconUploadProps> = ({
       />
       {userIcon && (
         <div className="icon-preview">
-          <img src={userIcon} alt="User icon" height="50" />
+          <img
+            src={decompressUrl(userIcon) ?? ""}
+            alt="User icon"
+            height="50"
+          />
           <button className="remove-icon" onClick={removeIcon}>
             Remove
           </button>
