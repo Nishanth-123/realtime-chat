@@ -63,7 +63,6 @@ const TelepartyProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const onConnectionClosed = useCallback(() => {
-    console.log("12345 connection closed");
     init();
   }, []);
 
@@ -95,11 +94,9 @@ const TelepartyProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   useEffect(() => {
-    console.log("12345 new connection");
     init();
 
     return () => {
-      console.log("12345 tear down in last use effect");
       clientRef.current?.teardown();
     };
     //@ts-nocheck

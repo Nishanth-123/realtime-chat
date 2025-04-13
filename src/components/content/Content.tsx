@@ -32,14 +32,14 @@ const Content = () => {
     []
   );
 
-  // const handleSignOut = useCallback(() => {
-  //   setInRoom(false);
-  //   setRoomId("");
-  //   setUserProfile({ nickname: "" });
-  //   saveRoomDetails(undefined);
-  //   // client?.teardown();
-  // }, [client]);
-  //
+  const handleSignOut = useCallback(() => {
+    setInRoom(false);
+    setRoomId("");
+    setUserProfile({ nickname: "" });
+    saveRoomDetails(undefined);
+    client?.teardown();
+  }, [client]);
+
   return (
     <main className="content">
       {!inRoom ? (
@@ -48,7 +48,7 @@ const Content = () => {
         <ChatRoom
           roomId={roomId}
           userProfile={userProfile}
-          onSignOut={() => {}}
+          onSignOut={handleSignOut}
         />
       )}
     </main>
