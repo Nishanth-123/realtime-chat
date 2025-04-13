@@ -24,7 +24,16 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   if (message.isSystemMessage) {
     return (
       <div className="message system-message">
-        <div className="message-body">{message.body}</div>
+        <div className="message-body">
+          {message.userNickname
+            ? `${
+                message.userNickname === currentUserNickname
+                  ? "You"
+                  : message.userNickname
+              } `
+            : ""}
+          {message.body}
+        </div>
       </div>
     );
   }

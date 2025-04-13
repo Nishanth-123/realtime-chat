@@ -4,6 +4,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import {
@@ -12,16 +13,22 @@ import {
   TelepartyClient,
 } from "teleparty-websocket-lib";
 import { SocketMessage } from "teleparty-websocket-lib/lib/SocketMessage";
+import { getRoomDetails } from "../service/roomDetails";
 
 interface TelepartyContextType {
   client: TelepartyClient | null;
-  isConnected: boolean;
-  isConnecting: boolean;
-  connectionClosed: boolean;
   messages: SessionChatMessage[];
   usersTyping: string[];
   addMessage: (message: string) => void;
+  joinChatRoom: (
+    nickName: string,
+    roomId: string,
+    userIcon?: string
+  ) => Promise<void>;
+  createChatRoom: (nickName: string, userIcon?: string) => Promise<string>;
   setUsersTypingState: (typing: boolean) => void;
+  userId: string | undefined;
+  messagesLoading: boolean;
 }
 
 const TelepartyContext = createContext<TelepartyContextType | null>(null);
@@ -31,29 +38,36 @@ const TelepartyProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [client, setClient] = useState<TelepartyClient | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
-  const [isConnecting, setIsConnecting] = useState(true);
-  const [connectionClosed, setConnectionClosed] = useState(false);
+  const clientRef = useRef<TelepartyClient | null>(null);
+  const [messagesLoading, setMessagesLoading] = useState(true);
   const [messages, setMessages] = useState<SessionChatMessage[]>([]);
   const [usersTyping, setUsersTyping] = useState<string[]>([]);
+  const initialRef = useRef<boolean>(true);
+  const [userId, setUserId] = useState<string>();
 
   const onConnectionReady = useCallback(() => {
-    setIsConnected(true);
-    setIsConnecting(false);
+    const roomDetails = getRoomDetails();
+
+    if (initialRef.current && roomDetails) {
+      joinChatRoom(
+        roomDetails.userProfile.nickname,
+        roomDetails.roomId,
+        roomDetails.userProfile.userIcon
+      ).finally(() => {
+        setMessagesLoading(false);
+      });
+      initialRef.current = false;
+    } else {
+      setMessagesLoading(false);
+    }
   }, []);
 
   const onConnectionClosed = useCallback(() => {
-    setIsConnected(false);
-    setConnectionClosed(true);
-    setClient(null);
+    console.log("12345 connection closed");
+    init();
   }, []);
 
-  useEffect(() => {
-    console.log("12345 client", client);
-  }, [client]);
-
   const onMessage = useCallback((message: SocketMessage) => {
-    console.log("12345 message", message);
     if (message.type === SocketMessageTypes.SEND_MESSAGE.toString()) {
       const chatMessage = message.data as SessionChatMessage;
       setMessages((prevMessages) => [...prevMessages, chatMessage]);
@@ -65,56 +79,81 @@ const TelepartyProvider: React.FC<{ children: React.ReactNode }> = ({
         usersTyping: string[];
       };
       setUsersTyping(typingData.usersTyping);
+    } else if (message.type === "userId") {
+      setUserId(message.data.userId);
     }
   }, []);
 
-  useEffect(() => {
+  const init = useCallback(() => {
     const newClient = new TelepartyClient({
       onMessage: onMessage,
       onConnectionReady: onConnectionReady,
       onClose: onConnectionClosed,
     });
+    clientRef.current = newClient;
     setClient(newClient);
+  }, []);
 
+  useEffect(() => {
+    console.log("12345 new connection");
+    init();
+
+    return () => {
+      console.log("12345 tear down in last use effect");
+      clientRef.current?.teardown();
+    };
     //@ts-nocheck
   }, []);
 
-  const addMessage = useCallback(
-    (message: string) => {
-      console.log("12345 addMessage", message, client);
-      if (!client) return;
-      client.sendMessage(
-        SocketMessageTypes.SEND_MESSAGE,
-        {
-          body: message,
-        },
-        (response) => {
-          console.log("12345 addMessage response", response);
-        }
+  const addMessage = useCallback((message: string) => {
+    if (!clientRef.current) init();
+    clientRef.current!!.sendMessage(SocketMessageTypes.SEND_MESSAGE, {
+      body: message,
+    });
+  }, []);
+
+  const setUsersTypingState = useCallback((typing: boolean) => {
+    if (!clientRef.current) init();
+    clientRef.current!!.sendMessage(SocketMessageTypes.SET_TYPING_PRESENCE, {
+      typing: typing,
+    });
+  }, []);
+
+  const joinChatRoom = useCallback(
+    async (nickName: string, roomId: string, userIcon?: string) => {
+      if (!clientRef.current) init();
+      const messageList = await clientRef.current!!.joinChatRoom(
+        nickName,
+        roomId,
+        userIcon
       );
+      setMessages(messageList.messages);
     },
-    [client]
+    []
   );
 
-  const setUsersTypingState = useCallback(
-    (typing: boolean) => {
-      if (!client) return;
-      client.sendMessage(SocketMessageTypes.SET_TYPING_PRESENCE, {
-        typing: typing,
-      });
+  const createChatRoom = useCallback(
+    async (nickName: string, userIcon?: string) => {
+      if (!clientRef.current) init();
+      const roomId = await clientRef.current!!.createChatRoom(
+        nickName,
+        userIcon
+      );
+      return roomId;
     },
-    [client]
+    []
   );
 
   const value = {
     client,
-    isConnected,
-    isConnecting,
-    connectionClosed,
     messages,
     usersTyping,
     addMessage,
+    joinChatRoom,
+    createChatRoom,
     setUsersTypingState,
+    messagesLoading,
+    userId,
   };
 
   return (

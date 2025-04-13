@@ -1,7 +1,8 @@
-import React, { useRef, useEffect, memo } from "react";
+import React, { useRef, useEffect, memo, useMemo } from "react";
 import "./MessageList.css";
 import { SessionChatMessage } from "teleparty-websocket-lib";
 import ChatMessage from "../chatMessage/ChatMessage";
+import { useTeleparty } from "../../context/TelepartyContext";
 
 interface MessageListProps {
   messages: SessionChatMessage[];
@@ -15,6 +16,10 @@ const MessageList: React.FC<MessageListProps> = ({
   usersTyping,
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { userId, messagesLoading } = useTeleparty();
+  const otherUsersTyping = useMemo(() => {
+    return usersTyping.filter((uId) => uId !== userId);
+  }, [userId, usersTyping]);
 
   // Scroll to bottom when new messages are added
   useEffect(() => {
@@ -23,6 +28,7 @@ const MessageList: React.FC<MessageListProps> = ({
 
   return (
     <div className="messages-container">
+      {messagesLoading && <div>Loading messages...</div>}
       {messages.map((message, index) => (
         <ChatMessage
           key={`${message.permId}-${message.timestamp}-${index}`}
@@ -31,11 +37,11 @@ const MessageList: React.FC<MessageListProps> = ({
         />
       ))}
 
-      {usersTyping.length > 0 && (
+      {otherUsersTyping.length > 0 && (
         <div className="typing-indicator">
-          {usersTyping.length === 1
+          {otherUsersTyping.length === 1
             ? "Someone is typing..."
-            : `${usersTyping.length} people are typing...`}
+            : `${otherUsersTyping.length} people are typing...`}
         </div>
       )}
 

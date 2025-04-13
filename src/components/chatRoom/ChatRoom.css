@@ -62,8 +62,7 @@
     flex: 1;
   }
   
-  .copy-button {
-    background-color: #4a6fa5;
+  .room-id-display button {
     color: white;
     border: none;
     border-radius: 4px;
@@ -72,8 +71,21 @@
     font-size: 14px;
     transition: background-color 0.2s;
   }
+
+  .copy-button{
+    background-color: #4a6fa5;
+  }
+  
+  .signout-button{
+    background-color: #f44336;
+  }
+
   
   .copy-button:hover {
     background-color: #3a5a8a;
+  }
+
+  .signout-button:hover {
+    background-color: #d32f2f;
   }
 

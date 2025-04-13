@@ -8,8 +8,13 @@ import ChatInput from "../chatInput/ChatInput";
 interface ChatRoomProps {
   roomId: string;
   userProfile: UserProfile;
+  onSignOut: () => void;
 }
-const ChatRoom: React.FC<ChatRoomProps> = ({ roomId, userProfile }) => {
+const ChatRoom: React.FC<ChatRoomProps> = ({
+  roomId,
+  userProfile,
+  onSignOut,
+}) => {
   const { messages, usersTyping, addMessage } = useTeleparty();
 
   const handleSendMessage = useCallback(
@@ -46,6 +51,9 @@ const ChatRoom: React.FC<ChatRoomProps> = ({ roomId, userProfile }) => {
             }}
           >
             Copy
+          </button>
+          <button className="signout-button" onClick={onSignOut}>
+            Sign Out
           </button>
         </div>
       </div>

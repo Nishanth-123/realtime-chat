@@ -11,7 +11,7 @@ interface JoinCreateRoomProps {
 }
 
 const JoinCreateRoom = ({ onRoomJoined }: JoinCreateRoomProps) => {
-  const { client } = useTeleparty();
+  const { client, joinChatRoom, createChatRoom } = useTeleparty();
   const [nickname, setNickname] = useState("");
   const [userIcon, setUserIcon] = useState<string | undefined>(undefined);
   const [joinRoomId, setJoinRoomId] = useState("");
@@ -41,7 +41,7 @@ const JoinCreateRoom = ({ onRoomJoined }: JoinCreateRoomProps) => {
 
     try {
       setIsCreating(true);
-      const newRoomId = await client.createChatRoom(nickname, userIcon);
+      const newRoomId = await createChatRoom(nickname, userIcon);
       onRoomJoined(newRoomId, { nickname, userIcon });
     } catch (error) {
       console.error("Error creating room:", error);
@@ -49,14 +49,14 @@ const JoinCreateRoom = ({ onRoomJoined }: JoinCreateRoomProps) => {
     } finally {
       setIsCreating(false);
     }
-  }, [client, nickname, userIcon, onRoomJoined]);
+  }, [createChatRoom, nickname, userIcon, onRoomJoined]);
 
   const joinRoom = useCallback(async () => {
     if (!client || !joinRoomId.trim() || !nickname.trim()) return;
 
     try {
       setIsJoining(true);
-      await client.joinChatRoom(nickname, joinRoomId, userIcon);
+      await joinChatRoom(nickname, joinRoomId, userIcon);
       onRoomJoined(joinRoomId, { nickname, userIcon });
     } catch (error) {
       console.error("Error joining room:", error);
@@ -64,7 +64,7 @@ const JoinCreateRoom = ({ onRoomJoined }: JoinCreateRoomProps) => {
     } finally {
       setIsJoining(false);
     }
-  }, [client, joinRoomId, nickname, userIcon, onRoomJoined]);
+  }, [joinChatRoom, joinRoomId, nickname, userIcon, onRoomJoined]);
 
   return (
     <div className="join-create-container">
