@@ -1,6 +1,5 @@
 import React, { memo, useCallback } from "react";
 import "./UserIconUpload.css";
-import { compressUrl, decompressUrl } from "../../../utils";
 
 interface UserIconUploadProps {
   userIcon?: string;
@@ -31,7 +30,9 @@ const UserIconUpload: React.FC<UserIconUploadProps> = ({
         formData.append("image", file);
 
         fetch(
-          `https://api.imgbb.com/1/upload?expiration=8640000&key=${apiKey}`,
+          `https://api.imgbb.com/1/upload?expiration=8640000&key=${apiKey}&name=${Math.random()
+            .toString()
+            .slice(-2)}${file.name.lastIndexOf(".")}`,
           {
             method: "POST",
             body: formData,
@@ -42,8 +43,7 @@ const UserIconUpload: React.FC<UserIconUploadProps> = ({
             if (data.success) {
               // Get the URL and do something with it
               const imageUrl = data.data.url;
-              console.log("Uploaded image URL:", imageUrl);
-              onIconChange(compressUrl(imageUrl));
+              onIconChange(imageUrl);
             } else {
               console.error("Upload failed:", data.error);
               alert("Failed to upload image.");
@@ -74,11 +74,7 @@ const UserIconUpload: React.FC<UserIconUploadProps> = ({
       />
       {userIcon && (
         <div className="icon-preview">
-          <img
-            src={decompressUrl(userIcon) ?? ""}
-            alt="User icon"
-            height="50"
-          />
+          <img src={userIcon} alt="User icon" height="50" />
           <button className="remove-icon" onClick={removeIcon}>
             Remove
           </button>
