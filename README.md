@@ -6,13 +6,13 @@ This app enables us to create a chat room or join an existing room with an id.
 
 - You can run `npm install` in the root directory to install dependencies.
 - You can run `npm run dev` in the root directory after installing dependencies. That's it. You can access the app at `localhost:5173`.
-- You can create a room in one tab and join the created room with the room ID in a different tab as a different user to witness the working of the app.
+- You can create a room in one browser context and join the created room with the room ID in a different browser context as a different user to witness the working of the app.
 
 
 ## Steps to use public website
 
 - You can access the publicly available website at `https://nishanth-123.github.io/realtime-chat/`
-- You can create a room in one tab and join the created room with the room ID in a different tab as a different user to witness the working of the app.
+- You can create a room in one browser context and join the created room with the room ID in a different browser context as a different user to witness the working of the app.
 
 ## Tech stack used
 
